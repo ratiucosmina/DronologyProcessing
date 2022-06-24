@@ -1,0 +1,5 @@
+﻿{
+  "o": "{{ organization name }}",
+  "t": "{{ personal access token }}",
+  "p": "{{ project name }}"
+}

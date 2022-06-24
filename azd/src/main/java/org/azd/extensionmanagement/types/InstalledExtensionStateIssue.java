@@ -1,0 +1,59 @@
+package org.azd.extensionmanagement.types;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+/***
+ * Represents an installation issue
+ */
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class InstalledExtensionStateIssue {
+    /***
+     * The error message
+     */
+    @JsonProperty("message")
+    private String message;
+    /***
+     * Source of the installation issue, for example "Demands"
+     */
+    @JsonProperty("source")
+    private String source;
+    /***
+     * Installation issue type (Warning, Error)
+     */
+    @JsonProperty("type")
+    private String type;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "InstalledExtensionStateIssue{" +
+                "message='" + message + '\'' +
+                ", source='" + source + '\'' +
+                ", type='" + type + '\'' +
+                '}';
+    }
+}
