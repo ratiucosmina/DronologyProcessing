@@ -17,9 +17,10 @@ public class Main {
     public static void main(String[] args) {
 //        JiraJsonParser parser = new JiraJsonParser();
 //        JiraToAzureTranslator translator = new JiraToAzureTranslator("ratiucosmina", "Dronology-Final", "bywbcvqjncljzxizgibtvatchkwggtok2qzztyetmugyco5zrhoq");
-        UserStudyScript studyScript = new UserStudyScript("christophmayr-dorn0649","xrrz4rxg46p7xisrcmjh2hw63irp6dda4ezw4atjncv54kbr5i7q");
+//        UserStudyScript studyScript = new UserStudyScript("ratiucosmina", "shaznlxvygpx73f66thoixaxoq4rvq53es73x5f2axb24wyu7zsa");
+        UserStudyScript studyScript = new UserStudyScript("christophmayr-dorn0649","qepf4l7d3azzty6rwgws6vhdf3bgkja25xqezxnphgdkm7uyiryq");
         try {
-            studyScript.setUpProject("UserStudy1Prep");
+            studyScript.setUpProject("UserStudy",1);
         } catch (Exception e) {
             e.printStackTrace();
         }
