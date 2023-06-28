@@ -1,41 +1,43 @@
-Change Request,CR1, – Robotic arm controller implementation,A robotic arm controller shall be implemented to manage the movement and safety conditions,Released
-Requirement,SRS1, – Arm length,The length of the arm shall be computed based on the factory setup,Released
-Requirement,SRS2, – Movement trajectory,The trajectory of the arm movement shall follow the attached model,Released
-Requirement,SRS3, – Robot height,The robot height shall be consistent with the factory setup,Released
-Requirement,SRS4, – Diameter of the arm beam,The diameter of the arm shall be computed based on the maximum package mass,Released
-Requirement,SRS5, – Arm joint rotation angles,The maximum rotation angles shall be consistent with the attached model,Ready For Review
-Requirement,SRS6, – Deflection safety constraints,The deflection shall not exceed the maximum safe value for the maximum mass of the package,Released
-Requirement,SRS7, – Movement time constraints,The movement on the prescribed trajectory shall be completed within the specified time limit,Released
-Requirement,SRS8, – Gripper configuration,The configuration of the gripper shall be consistent with the factory specifications and customer preferences,Released
-Requirement,SRS9, – Robot base rotation threshold,The rotation of the robot base shall not exceed safety constraints while corresponding to the factory setup requirements,Reviewed
-Requirement,SRS10, – Velocity constraints in special use cases,The movement velocity shall remain within safe constraints for packages with a mass approaching the mass constraint,Released
-Change Request,CR2, – Integrate the robot in the factory setup,The robotic arm shall be customizable according to the requirements of the factory setup provided by the customer,Released
-Documentation,FS1, – Feasibility study in full factory setting,A study of the feasibility of the solution in the factory setting provided by the customer,Released
-Documentation,FS2, – Feasibility study in factory model,A study of the feasibility of the solution in a virtual model of a factory setting,Released
-Functional Specification,SPEC1, – Robotic arm timing controller,The functional specification of the controller that coordinates the timing and synchronization of the robotic arm movement,Released
-Change Request,CR3, – Package mass,The robotic arm shall handle a maximum package weight consistent with the customer requirements,Released
-Functional Specification,SPEC2, – Arm construction parameters,The functional specification of the characteristics of the components used in the construction of the robot arm,Draft
-Functional Specification,SPEC3, – Robotic arm safety controller,The functional specification of the controller managing the safety parameters of the robotic arm,Ready For Review
-Change Request,CR4, - Movement speed for safe handling of heavy packages,The speed of the movement on the trajectory shall not exceed safety conditions relative to the weight of the package,Released
-Documentation,SPP, – Robotic arm controller software project plan,Software project plan for the robotic arm controller implementation,Released
-CR1,SRS1,Microsoft.VSTS.Common.Affects-Forward
-CR1,SRS2,Microsoft.VSTS.Common.Affects-Forward
-CR1,SRS3,Microsoft.VSTS.Common.Affects-Forward
-CR1,SRS5,Microsoft.VSTS.Common.Affects-Forward
-CR1,SRS8,Microsoft.VSTS.Common.Affects-Forward
-CR1,SRS9,Microsoft.VSTS.Common.Affects-Forward
-CR2,SRS1,Microsoft.VSTS.Common.Affects-Forward
-CR2,SRS2,Microsoft.VSTS.Common.Affects-Forward
-CR2,SRS3,Microsoft.VSTS.Common.Affects-Forward
+Change Request,CR1,CR1 description,Released
+Requirement,SRS1,SRS1 description,Released
+Requirement,SRS2,SRS1 description,Released
+Requirement,SRS3,SRS1 description,Released
+Requirement,SRS4,SRS1 description,Released
+Requirement,SRS5,SRS1 description,Ready For Review
+Requirement,SRS6,SRS1 description,Released
+Requirement,SRS7,SRS1 description,Released
+Requirement,SRS8,SRS1 description,Released
+Requirement,SRS9,SRS1 description,Reviewed
+Requirement,SRS10,SRS1 description,Released
+Change Request,CR2,CR2 description,Released
+Documentation,FS1,Feasibility Study,Released
+Documentation,FS2,Feasibility Study,Archived
+Functional Specification,SPEC1,Functional Specification,Ready For Review
+Change Request,CR3,Change request description,Released
+Functional Specification,SPEC2,Functional specification,Released
+Functional Specification,SPEC3,Functional specification,Reviewed
+Documentation,SPP,Software project plan,Released
+CR1,SRS1,System.LinkTypes.Related
+CR1,SRS2,System.LinkTypes.Related
+CR1,SRS3,System.LinkTypes.Related
+CR1,SRS4,System.LinkTypes.Related
+CR1,SRS5,System.LinkTypes.Related
+CR1,SRS6,System.LinkTypes.Related
+CR1,SRS7,System.LinkTypes.Related
+CR1,SRS8,System.LinkTypes.Related
+CR1,SRS9,System.LinkTypes.Related
+CR1,SRS10,System.LinkTypes.Related
+CR2,SRS1,System.LinkTypes.Related
+CR2,SRS2,System.LinkTypes.Related
+CR2,SRS3,System.LinkTypes.Related
 CR2,FS1,System.LinkTypes.Related
 CR2,FS2,System.LinkTypes.Related
-SRS4,SPEC2,System.LinkTypes.Dependency-Forward
-SRS6,SPEC3,System.LinkTypes.Dependency-Forward
-CR3,SRS4,Microsoft.VSTS.Common.Affects-Forward
-CR3,SRS6,Microsoft.VSTS.Common.Affects-Forward
-CR4,SRS7,Microsoft.VSTS.Common.Affects-Forward
-CR4,SRS10,Microsoft.VSTS.Common.Affects-Forward
-SRS7,SPEC1,System.LinkTypes.Dependency-Forward
-SRS10,SPEC1,System.LinkTypes.Dependency-Forward
-CR4,SPEC1,System.LinkTypes.Related
-CR4,SPP,System.LinkTypes.Related
+CR1,SPEC1,System.LinkTypes.Related
+SRS7,SPEC1,System.LinkTypes.Related
+SPEC2,SRS4,System.LinkTypes.Related
+SPEC3,SRS6,System.LinkTypes.Related
+CR3,SPEC2,System.LinkTypes.Related
+CR3,SPEC3,System.LinkTypes.Related
+CR3,SRS4,System.LinkTypes.Related
+CR3,SRS6,System.LinkTypes.Related
+CR3,SPP,System.LinkTypes.Related

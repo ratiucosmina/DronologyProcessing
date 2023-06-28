@@ -1,5 +1,7 @@
 package dronology;
 
+import at.jku.isse.designspace.sdk.core.model.*;
+import at.jku.isse.designspace.sdk.gui.swt.ConnectToWorkspaceDialog;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueLink;
@@ -11,24 +13,55 @@ import org.azd.workitemtracking.types.WorkItem;
 import org.azd.workitemtracking.types.WorkItemRelations;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import java.util.*;
 
 public class JiraToAzureTranslator {
-    AzDClientApi azureApi;
+    InstanceType issueType;
     WorkItemTrackingApi witApi;
-    public Map<String, WorkItem> mapping = new HashMap<>();
+    public Map<String, Instance> mapping = new HashMap<>();
 
-    public JiraToAzureTranslator(String organization, String project, String personalAccessToken) {
-        this.azureApi = new AzDClientApi(organization, project, personalAccessToken);
-        this.witApi = azureApi.getWorkItemTrackingApi();
+    public JiraToAzureTranslator(String organization, String project, String personalAccessToken, List<Optional<Issue>> issues) {
+        Display display = new Display();
+        Shell shell = new Shell(display);
+
+        ConnectToWorkspaceDialog dialog = new ConnectToWorkspaceDialog(shell, "Dronology", "1.0");
+        dialog.create();
+
+        if (dialog.open() == Window.OK) {
+            Workspace workspace = dialog.getSelectedWorkspace();          //we always use this workspace
+            User user = dialog.getSelectedUser();
+            Folder instancesFolder = dialog.getSelectedInstancesFolder();
+
+            createInstanceTypes(workspace, dialog.selectedTypesFolder);
+            translateArtifacts(issues, workspace, instancesFolder);
+
+            display.dispose();
+        }
     }
 
-    public void translateArtifacts(List<Optional<Issue>> issues) {
+    private void createInstanceTypes(Workspace workspace, Folder typesFolder) {
+        issueType = workspace.createInstanceType("Issue", typesFolder);
+        issueType.createPropertyType("name", Cardinality.SINGLE, String.class);
+        issueType.createPropertyType("issueType", Cardinality.SINGLE, String.class);
+        issueType.createPropertyType("description", Cardinality.SINGLE, String.class);
+        issueType.createPropertyType("labels", Cardinality.SINGLE, String.class);
+        issueType.createPropertyType("probability", Cardinality.SINGLE, String.class);
+        issueType.createPropertyType("purpose", Cardinality.SINGLE, String.class);
+        issueType.createPropertyType("relatedTo", Cardinality.SET, issueType);
+        issueType.createOpposablePropertyType("successor", Cardinality.SET, issueType, "predecessor", Cardinality.SET);
+    }
+
+    public void translateArtifacts(List<Optional<Issue>> issues, Workspace workspace, Folder instancesFolder) {
         for (Optional<Issue> optionalIssue : issues)
             if (optionalIssue.isPresent()) {
                 try {
-                    createWorkItem(optionalIssue.get());
+                    createWorkItem(optionalIssue.get(), workspace, instancesFolder);
                 } catch (AzDException e) {
                     e.printStackTrace();
                 }
@@ -44,29 +77,31 @@ public class JiraToAzureTranslator {
 
     }
 
-    private void createWorkItem(Issue issue) throws AzDException {
+    private void createWorkItem(Issue issue, Workspace workspace, Folder instancesFolder) throws AzDException {
         String azureType = getAzureType(issue.getIssueType().getName());
-        WorkItem item;
         String title = issue.getSummary() == null ? issue.getKey() : issue.getSummary();
         String description = issue.getDescription() == null ? "" : issue.getDescription();
         Map<String, Object> additionalFields = new HashMap<>();
         String[] labels = issue.getLabels() == null ? new String[0] : issue.getLabels().toArray(new String[0]);
-        additionalFields.put("System.Tags", String.join(",", labels));
+        Instance item = workspace.createInstance(title, issueType, instancesFolder);
+        item.propertyAsSingle("description").set(description);
+        item.propertyAsSingle("issueType").set(azureType);
+        item.propertyAsSingle("labels").set(String.join(",", labels));
         if (azureType.equals("Risk"))
-            additionalFields.put("probability", "0");
+            item.propertyAsSingle("probability").set("0");
         if (azureType.equals("Review"))
-            additionalFields.put("purpose", description);
-        item = witApi.createWorkItem(azureType, title, description, additionalFields);
+            item.propertyAsSingle("purpose").set(description);
+//      ToDo:  item = witApi.createWorkItem(azureType, title, description, additionalFields);
+        
         mapping.put(issue.getKey(), item);
     }
 
     private void createLinks(Issue issue) throws AzDException {
-        WorkItem source = mapping.get(issue.getKey());
+        Instance source = mapping.get(issue.getKey());
         if (source == null) {
             System.out.println(issue);
             return;
         }
-        Map<String, String> links = new HashMap<>();
 
         IssueField parentField = issue.getField("parent");
         if (parentField != null && parentField.getValue() != null) {
@@ -77,8 +112,7 @@ public class JiraToAzureTranslator {
                     System.out.println(parentKey);
                     System.out.println(issue.getIssueType().getName() + " no visible parent");
                 } else {
-                    links.put("System.LinkTypes.Dependency-Forward", mapping.get(parentKey).getUrl());
-                    System.out.println("YES " + issue.getIssueType().getName() + " " + issue.getSummary() + " has parent");
+                    source.propertyAsSet("successor").add(mapping.get(parentKey));
                 }
             } catch (JSONException e) {
                 System.out.println("Parent parsing failed");
@@ -87,14 +121,11 @@ public class JiraToAzureTranslator {
         for (IssueLink link : issue.getIssueLinks()) {
             if (link.getIssueLinkType().getDirection() != IssueLinkType.Direction.OUTBOUND)
                 continue;
-            WorkItem target = mapping.getOrDefault(link.getTargetIssueKey(), null);
+            Instance target = mapping.getOrDefault(link.getTargetIssueKey(), null);
             if (target == null)
                 continue;
-            links.put(getAzureRelationType(link.getIssueLinkType().getName()), target.getUrl());
+            source.propertyAsSet("relatedTo").add(target);
         }
-
-        if (!links.isEmpty())
-            witApi.addLinks(source.getId(), links);
     }
 
 
